@@ -267,14 +267,14 @@ uint64_t PubHandler::GetEthPacketTimestamp(uint8_t timestamp_type, uint8_t* time
   LdsStamp time;
   memcpy(time.stamp_bytes, time_stamp, size);
 
-  // if (timestamp_type == kTimestampTypeGptpOrPtp ||
-  //     timestamp_type == kTimestampTypeGps) {
-  //   return time.stamp;
-  // }
+  if (timestamp_type == kTimestampTypeGptpOrPtp ||
+      timestamp_type == kTimestampTypeGps) {
+    return time.stamp;
+  }
 
-  // return std::chrono::high_resolution_clock::now().time_since_epoch().count();
-  ros::Time ros_time = ros::Time::now();  // get current ROS time
-  return static_cast<uint64_t>(ros_time.sec) * 1000000000ULL + static_cast<uint64_t>(ros_time.nsec);
+  return std::chrono::high_resolution_clock::now().time_since_epoch().count();
+  // ros::Time ros_time = ros::Time::now();  // get current ROS time
+  // return static_cast<uint64_t>(ros_time.sec) * 1000000000ULL + static_cast<uint64_t>(ros_time.nsec);
 }
 
 /*******************************/
@@ -282,10 +282,13 @@ uint64_t PubHandler::GetEthPacketTimestamp(uint8_t timestamp_type, uint8_t* time
 LidarPubHandler::LidarPubHandler() : is_set_extrinsic_params_(false) {}
 
 uint64_t LidarPubHandler::GetLidarBaseTime() {
-  if (points_clouds_.empty()) {
-    return 0;
-  }
-  return points_clouds_.at(0).offset_time;
+  ros::Time ros_time = ros::Time::now();  // get current ROS time
+  uint64_t time = static_cast<uint64_t>(ros_time.sec) * 1000000000ULL + static_cast<uint64_t>(ros_time.nsec);
+  return time;
+  // if (points_clouds_.empty()) {
+  //   return 0;
+  // }
+  // return points_clouds_.at(0).offset_time;
 }
 
 void LidarPubHandler::GetLidarPointClouds(std::vector<PointXyzlt>& points_clouds) {
@@ -294,10 +297,13 @@ void LidarPubHandler::GetLidarPointClouds(std::vector<PointXyzlt>& points_clouds
 }
 
 uint64_t LidarPubHandler::GetRecentTimeStamp() {
-  if (points_clouds_.empty()) {
-    return 0;
-  }
-  return points_clouds_.back().offset_time;
+  // if (points_clouds_.empty()) {
+  //   return 0;
+  // }
+  // return points_clouds_.back().offset_time;
+  ros::Time ros_time = ros::Time::now();  // get current ROS time
+  uint64_t time = static_cast<uint64_t>(ros_time.sec) * 1000000000ULL + static_cast<uint64_t>(ros_time.nsec);
+  return time;
 }
 
 uint32_t LidarPubHandler::GetLidarPointCloudsSize() {
